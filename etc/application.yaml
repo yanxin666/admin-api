@@ -1,0 +1,118 @@
+Name: application
+Host: 0.0.0.0
+Port: 8689
+Mode: dev
+Timeout: 120000
+Salt: K8i8mTfc5sTXO7OG
+
+Log:
+  ServiceName: muse-admin
+  Mode: console
+  Encoding: plain
+  Path: /tmp/logs/muse-admin
+  Level: debug
+  KeepDays: 7
+
+JwtAuth:
+  AccessSecret: fed7c5f5-3ed3-44b7-9685-9a868a287ddd
+  AccessExpire: 604800 # 时效性为一周
+
+Mysql:
+  DataSourceAdmin: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_admin?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceAbility: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_ability?charset=utf8mb4&parseTime=True&loc=Local
+#  DataSourceAbility: root:123456@tcp(127.0.0.1:3306)/sim?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceCenter: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_center?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceHub: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_hub?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceKingClub: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/king_club?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConn: 100
+  MaxIdleConn: 10
+  ConnMaxLifetime: 60
+  ConnMaxIdleTime: 60
+
+Cache:
+  - Host: 49.232.253.114:6379
+    Pass: xxqwlefjwlf@1.1
+    Type: node
+
+Redis:
+  Host: 49.232.253.114:6379
+  Pass: xxqwlefjwlf@1.1
+  Type: node
+
+# 密文所需加密密钥，需要保密，确保安全性，禁止更改
+EncryptKey: 9ef7a2c7f2ed4c1c
+
+Cls:
+  Endpoint: ap-beijing.cls.tencentcs.com
+  TopicID: b7a9c8ca-69af-4e1e-926e-f3fd0efca28b
+
+TencentCloud:
+  SecretId: AKID76yrY1Lf3b7Mal5JTchpz2xmR5b8lV8c
+  SecretKey: e8ORFvPk9Y6okds20qZDoMivwu5WtDSf
+  SmsAppId: '1400838906'
+  SmsSign: 知明而行科技
+  SmsSize: 6
+  SmsSendLimit: 10
+
+Im:
+  AppId: 1600030269
+  Key: 6a5feb1f6e38ce8e7d6c2745ffde66b1e7e58c736ad5d99725f9c479ab008090
+
+#xxl-job
+XxlJob:
+  # 配置中心域名
+  Host: http://127.0.0.1:8800/xxl-job-admin
+  # 访问令牌
+  AccessToken: Lpoms_xxljob_default_token
+  # port 自定义port
+  Port: "9995"
+  #RegistrerKey 关联任务调度执行器名称
+  RegistryKey: ability-api
+
+# Oss
+Oss:
+  # 可从oss秘钥管理里查看
+  SecretId: AKID76yrY1Lf3b7Mal5JTchpz2xmR5b8lV8c
+  # 可从oss秘钥管理里查看
+  SecretKey: e8ORFvPk9Y6okds20qZDoMivwu5WtDSf
+  # 账号的APPID
+  Appid: 1318590712
+  # 桶的名称
+  Bucket: static-1318590712
+  # 新开桶 带有生命周期30天
+  BehaviorBucket: muse-event-1318590712
+  # 桶所在的地区-北京
+  Region: ap-beijing
+  ReplaceDomain: https://static.zmexing.com
+
+#RocketMQ配置（腾讯云）
+RocketMQ:
+  # 服务地址
+  EndPoint: rmq-jaz2q432.rocketmq.bj.public.tencenttdmq.com:8080
+  # AccessKey
+  AccessKey: akjaz2q4323fe4c263e2bd
+  # SecretKey
+  SecretKey: skf535d5b64980290a
+  # 生产重试次数
+  ProducerRetryTime: 3
+  # 生产者超时时间
+  ProducerTimeout: 10
+  # 日志等级 debug/warn/error/info
+  LogLevel: "error"
+  # 日志根目录
+  LogRoot: "/tmp/logs/rocketmq"
+  # 是否开启控制台输出
+  LogConsole: "false"
+  # 环境
+  Env: "dev"
+
+RpcTarget:
+  Passport: 127.0.0.1:8200
+  Ability : 127.0.0.1:8201
+  Core: 127.0.0.1:8301
+
+# 音频配置
+MiniMax:
+  ApiKey: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiLljJfkuqznn6XmmI7ogIzooYznvZHnu5znp5HmioDmnInpmZDlhazlj7giLCJVc2VyTmFtZSI6IumSseS4m-eZuyIsIkFjY291bnQiOiIiLCJTdWJqZWN0SUQiOiIxNzI4NzEyMzI0OTc5NjI2ODA3IiwiUGhvbmUiOiIxODUxNTU5ODUzMSIsIkdyb3VwSUQiOiIxNzI4NzEyMzI0OTcxMjM4MTk5IiwiUGFnZU5hbWUiOiIiLCJNYWlsIjoiemhpbWluZ2VyeGluZ0Bkb3V5dXhpbmdjaGVuLmNvbSIsIkNyZWF0ZVRpbWUiOiIyMDI0LTA3LTE4IDEwOjU3OjEzIiwiaXNzIjoibWluaW1heCJ9.VVd_RGMaTqOnD_pHDsr6G0ynaAIiCMZ0hSCdS3Q2u4kyoLnXIRlAiLDhAHaVw1x_7p08nPh4f7AJDkVoo6-0r2NolKlg4mLs2wsFYVd4XLlo6QYD3Zu8pIA8l8sROjHb1M8RJQf15gNYekkjXfXx0sJU-g_7rofZiwRNGn6XzlA6vmSt0056RYBlEYkb36Va_qHRJPzeKr2GqaB70O88-e7m6yUs4TdIhBWbOv6k5Tt5w6KdczOPB924uzBK7evmuAAkIzyvB24czE-YId5m9wp5jEeXZy3Te9sCTct1N6x6wAl3w-G5jRx5OoK8xyS7Y7YR82tNoFXULbZZDZID4w
+  GroupIds:
+    CiYuan: "1728712324971238199"

@@ -1,0 +1,11 @@
+# 使用官方的 swagger-ui 镜像作为基础镜像
+FROM registry-ze.tencentcloudcr.com/basic/swaggerapi/swagger-ui:v5.17.9
+
+# 复制外层目录的 swagger.json 到镜像中的工作目录
+COPY ../../api/swagger/swagger.json /swagger.json
+
+# 设置环境变量
+ENV SWAGGER_JSON /swagger.json
+
+# 暴露端口
+EXPOSE 8080

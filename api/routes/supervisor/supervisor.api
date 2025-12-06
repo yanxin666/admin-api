@@ -1,0 +1,179 @@
+import "../common.api"
+
+info(
+	title: "督学服务"
+	desc: "督学列表"
+)
+
+// 督学排课
+type (
+	SupervisorListReq {
+		Id           int64 `form:"id,optional"`           // ID
+		TeacherId    int64 `form:"teacherId,optional"`    // 教师id
+		CourseId     int64 `form:"courseId,optional"`     // 课程id
+		Status       int64 `form:"status,optional"`       // 状态 1.待开放 2.开放 3.进行中 4.结束
+		ScheduleType int64 `form:"scheduleType,optional"` // 排课类型 1.直播 2.录播
+		PageReq
+	}
+	SupervisorListResp {
+		List       []SupervisorInfo `json:"list"`
+		Pagination Pagination       `json:"pagination"`
+	}
+	SupervisorInfo {
+		Id               int64  `json:"id"`               // 手机号
+		TeacherId        int64  `json:"teacherId"`        // 教师id
+		TeacherName      string `json:"teacherName"`      // 教师名称
+		CourseId         int64  `json:"courseId"`         // 课程id
+		CourseName       string `json:"courseName"`       // 课程名称
+		CourseType       int64  `json:"courseType"`       // 课程类型 1.超练作文慢练 2.超练作文快练 3.超练阅读
+		Name             string `json:"name"`             // 督学课名称
+		StreamTitle      string `json:"streamTitle"`      // 直播表标题
+		ScheduleType     int64  `json:"scheduleType"`     // 排课类型 1.直播 2.录播
+		StartTime        int64  `json:"startTime"`        // 开课时间
+		AppointmentStart int64  `json:"appointmentStart"` // 开始预约时间
+		AppointmentEnd   int64  `json:"appointmentEnd"`   // 结束预约时间
+		MaxStock         int64  `json:"maxStock"`         // 最大库存
+		SurplusStock     int64  `json:"surplusStock"`     // 剩余库存
+		Status           int64  `json:"status"`           // 状态 1.待开放 2.开放 3.进行中 4.结束
+		BgUrl            string `json:"bgUrl"`            // 伴学、督学课程背景图片
+		Content          string `json:"content"`          // 伴学、督学课程文案
+		CreatedAt        int64  `json:"createdAt"`        // 创建时间
+		UpdatedAt        int64  `json:"updatedAt"`        // 更新时间
+	}
+)
+
+// 督学排课状态修改
+type (
+	SupervisorScheduleStatusReq {
+		Id     int64 `json:"id" validate:"number"`
+		Status int64 `json:"status" validate:"number,gt=0"` // 1.待开放 2.开放 3.进行中 4.结束
+	}
+)
+
+// 督学排课新增
+type (
+	SupervisorScheduleEditReq {
+		Id              int64    `json:"id,optional" validate:"number"`
+		TearcherId      int64    `json:"teacherId"`
+		TeacherName     string   `json:"teacherName"`
+		CourseId        int64    `json:"courseId"`
+		CourseType      int64    `json:"courseType"` // 类型 1.超练作文 2.超练阅读
+		Name            string   `json:"name"`
+		StreamTitle     string   `json:"streamTitle"`                          // 直播课标题
+		EffectiveTime   []string `json:"effectiveTime"     validate:"len=2"`   // 活动时间
+		AppointmentTime []string `json:"appointmentTime"     validate:"len=2"` // 预约时间
+		StartTime       string   `json:"startTime"           validate:"len=1"` // 开课时间
+		MaxStock        int64    `json:"maxStock"            validate:"number,gte=0"`
+		SurplusStock    int64    `json:"surplusStock"        validate:"number,gte=0"`
+		ScheduleType    int64    `json:"scheduleType"        validate:"number,gt=0"` // 1.直播2.录播
+		Status          int64    `json:"status"              validate:"number,gt=0"` // 1.待开放 2.开放 3.进行中 4.结束
+		BgUrl           string   `json:"bgUrl"`
+		Content         string   `json:"content"`
+	}
+)
+
+type (
+	TeacherListReq {
+		Role int64 `form:"role,optional"` //教师角色  '角色 0.未选择角色 1.主讲 2.班主任 3.导播'
+	}
+	TeacherListResp {
+		List []TeacherInfo `json:"list"`
+	}
+	TeacherInfo {
+		Id        int64  `json:"id"`        //教师id
+		AccountId int64  `json:"accountId"` //教师账户ID
+		Name      string `json:"name"`      //教师名称
+		Phone     string `json:"phone"`     //手机号
+	}
+)
+
+type (
+	InteractionListReq {
+		Name string `form:"name,optional"` // 互动名字
+	}
+	InteractionListResp {
+		List []InteractionInfo `json:"list"`
+	}
+	InteractionInfo {
+		Id           int64  `json:"id"`           // 互动ID
+		Name         string `json:"name"`         // 互动名字
+		Description  string `json:"description"`  // 描述
+		TeachingData string `json:"teachingData"` // 教师ppt
+		Data         string `json:"data"`         // 互动数据
+	}
+
+	InteractionAddReq {
+		Name         string `json:"name"         validate:"required,min=1,max=50"` // 互动名字
+		Description  string `json:"description,optional"`                          // 描述
+		TeachingData string `json:"teachingData,optional"`                         // 教师ppt
+		Data         string `json:"data,optional"`                                 // 互动数据
+	}
+
+	InteractionUpdateReq {
+		Id           int64  `json:"id"           validate:"required,number,gt=0"`  // 互动ID
+		Name         string `json:"name"         validate:"required,min=1,max=50"` // 互动名字
+		Description  string `json:"description,optional"  validate:"omitempty"`    // 描述
+		TeachingData string `json:"teachingData,optional"  validate:"omitempty"`   // 教师ppt
+		Data         string `json:"data,optional"          validate:"omitempty"`   // 互动数据
+	}
+)
+
+// 工具筛选课程列表
+type (
+	CourseListReq {
+		UseCases   int64 `form:"useCases,optional"`   // 使用场景 1.练习 2.直播互动
+		CourseType int64 `form:"courseType,optional"` // 课程类型 1.超练作文 2.超练阅读
+	}
+	CourseListResp {
+		List []Course `json:"list"`
+	}
+	Course {
+		Id         int64  `json:"id"`         // ID
+		CourseType int64  `json:"courseType"` // 课程类型 1.超练作文慢练 2.超练作文快练 3.超练阅读
+		Name       string `json:"name"`       // 课程名称
+		LessonName string `json:"lessonName"` // 课节名称
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : supervisor
+	prefix : /admin/supervisor
+)
+service application {
+	@doc "督学排课列表"
+	@handler SupervisorScheduleList
+	get /list (SupervisorListReq) returns (SupervisorListResp)
+
+	@doc "修改督学排课状态"
+	@handler SupervisorScheduleStatus
+	post /statusUpdate (SupervisorScheduleStatusReq)
+
+	@doc "创建督学排课"
+	@handler SupervisorScheduleAdd
+	post /add (SupervisorScheduleEditReq) returns (Result)
+
+	@doc "修改督学排课"
+	@handler SupervisorScheduleEdit
+	post /edit (SupervisorScheduleEditReq) returns (Result)
+
+	@doc "老师列表"
+	@handler TeacherList
+	get /teacherList (TeacherListReq) returns (TeacherListResp)
+
+	@doc "互动列表"
+	@handler InteractionList
+	get /interactionList (InteractionListReq) returns (InteractionListResp)
+
+	@doc "添加互动"
+	@handler InteractionAdd
+	post /interactionAdd (InteractionAddReq)
+
+	@doc "修改互动"
+	@handler InteractionUpdate
+	post /interactionUpdate (InteractionUpdateReq)
+
+	@doc "课程列表"
+	@handler CourseList
+	get /courseList (CourseListReq) returns (CourseListResp)
+}

@@ -1,0 +1,73 @@
+import "../common.api"
+
+info(
+	title: "muse-ability 字典"
+	desc: "muse-ability 字典"
+)
+
+type (
+	SysDictWhite {
+		Id        int64  `json:"id"`        // ID
+		Key       string `json:"key"`       // 字典key
+		Remark    string `json:"remark"`    // 备注
+		CreatedAt int64  `json:"createdAt"` // 创建时间
+		UpdatedAt int64  `json:"updatedAt"` // 修改时间
+	}
+)
+
+type (
+	MuseDictPageReq {
+		PageReq
+		Key    string `form:"key,optional"`
+		Remark string `form:"remark,optional"`
+	}
+	MuseDictPageResp {
+		List       []SysDictWhite `json:"list"`
+		Pagination Pagination     `json:"pagination"`
+	}
+)
+
+type (
+	AddMuseDictReq {
+		Key    string `json:"key"`    // 字典key
+		Remark string `json:"remark"` // 备注
+	}
+)
+
+type (
+	DeleteMuseDictReq {
+		Id int64 `json:"id"  validate:"number,gte=1" label:"字典id"`
+	}
+)
+
+type (
+	UpdateMuseDictReq {
+		Id     int64  `json:"id"         validate:"number,gte=1"         label:"字典id"`
+		Key    string `json:"key"`    // 字典key
+		Remark string `json:"remark"` // 备注
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : dictionary/muse
+	prefix : /admin/dictionary/muse
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "字典列表"
+	@handler GetMuseDictPage
+	get /list (MuseDictPageReq) returns (MuseDictPageResp)
+
+	@doc "新增字典"
+	@handler AddMuseDict
+	post /add (AddMuseDictReq)  returns (Result)
+
+	@doc "删除字典"
+	@handler DeleteMuseDict
+	post /delete (DeleteMuseDictReq) returns (Result)
+
+	@doc "更新字典"
+	@handler UpdateMuseDict
+	post /update (UpdateMuseDictReq) returns (Result)
+}

@@ -1,0 +1,68 @@
+info(
+	desc: "用户行为管理"
+)
+
+type (
+	// 根据userid查询sessionid列表入参
+	GetListByUserIdReq {
+		UserId int64 `form:"userId"` // 用户ID
+	}
+	// 根据userid查询sessionid列表返回
+	GetListByUserIdResp {
+		List []*EventSession `json:"list"` // 用户会话关系列表
+	}
+
+	EventSession {
+		StratTime string `json:"stratTime"` // 开始时间
+		EndTime   string `json:"endTime"`   // 结束时间
+		Session   string `json:"session"`   // 会话
+		SessionId int64  `json:"sessionId"` //  会话ID
+	}
+	EventRecord {
+		EventId   string `json:"eventId"`   // 事件ID
+		EventType string `json:"eventType"` // 事件类型
+		EventTime int64  `json:"eventTime"` // 事件时间
+		Page      string `json:"page"`      // 事件页面
+		AppId     string `json:"appId"`     // 应用ID
+		Phone     string `json:"phone"`     // 手机号
+		UserAgent string `json:"userAgent"` // 浏览器信息
+		Screen    string `json:"screen"`    // 屏幕信息
+		Language  string `json:"language"`  // 语言
+		Data      string `json:"data"`      // 事件数据
+	}
+
+	// 根据sessionid查询事件列表入参
+	GetListBySessionIdReq {
+		SessionId int64 `form:"sessionId"` // 会话ID
+	}
+	// 根据sessionid查询事件列表返回
+	GetListBySessionIdResp {
+		List []*EventRecord `json:"list"` // 用户会话关系列表
+	}
+	// 获取用户ID列表
+	UserIdListResp {
+		List []int64 `json:"list"` // 用户ID列表
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: behavior/session
+	prefix: /admin/session
+)
+service application {
+
+	@doc ("根据获取userId列表")
+	@handler userIdList
+	get /v1/userIdList returns(UserIdListResp)
+
+	@doc ("根据userid查询sessionid列表")
+	@handler getListByUserId
+	get /v1/getListByUserId(GetListByUserIdReq) returns(GetListByUserIdResp)
+
+	@doc ("根据sessionId查列表")
+	@handler getListBySessionId
+	get /v1/getListBySessionId(GetListBySessionIdReq) returns(GetListBySessionIdResp)
+
+}

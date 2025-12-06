@@ -1,0 +1,92 @@
+import "../common.api"
+
+info(
+	desc: "数据中心 统编教材精讲课堂"
+)
+
+type (
+	HubLessonInfo {
+		Id            int64  `json:"id"`
+		LessonNo      string `json:"lessonNo"`      // 课节编号
+		NodeType      int64  `json:"nodeType"`      // 节点类型 1.小灶课 2.小语文 3.大语文
+		Name          string `json:"name"`          // 课程名称
+		PointName     string `json:"pointName"`     // 知识点名称
+		Status        int64  `json:"status"`        // 审核状态 1.初始录入 2.审核中 3.审核通过 4.未通过 5.下架
+		Grade         int64  `json:"grade"`         // 年级 10.学龄前 11.一年级 12.二年级 13.三年级 14.四年级 15.五年级 16.六年级 20.中小衔接 21.初一 22.初二 23.初三 31.高一 32.高二 33.高三 41.大学语文 42.中文专业 43.文学专家
+		Version       int64  `json:"version"`       // 版本号
+		OperateStatus int64  `json:"operateStatus"` // 操作状态 0.未推送 1.已推送 2.已下架
+		OperateName   string `json:"operateName"`   // 操作人名称
+		Data          string `json:"data"`          // 原始数据
+		AppVersion    string `json:"appVersion"`    // APP版本
+		CreatedAt     int64  `json:"createdAt"`     // 接收数据时间
+		UpdatedAt     int64  `json:"updatedAt"`     // 最后一次审核时间
+	}
+)
+
+type (
+	// 课程导入列表入参
+	HubLessonListReq {
+		Id            int64  `form:"id,optional"`
+		LessonNo      string `form:"lessonNo,optional"`      // 课节编号
+		NodeType      int64  `form:"nodeType,optional"`      // 节点类型 1.小灶课 2.小语文 3.大语文
+		Name          string `form:"name,optional"`          // 课程名称
+		PointName     string `form:"pointName,optional"`     // 知识点名称
+		Status        int64  `form:"status,optional"`        // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		OperateStatus int64  `form:"operateStatus,optional"` // 操作状态 0.未推送 1.已推送 2.已下架
+		PageReq
+	}
+	// 课程导入列表出参
+	HubLessonListResp {
+		List       []HubLessonInfo `json:"list"`
+		Pagination Pagination      `json:"pagination"`
+	}
+
+	// 课程导入详情入参
+	HubLessonDetailReq {
+		Id int64 `form:"id"`
+	}
+
+	// 课程导入审核入参
+	HubLessonInspectReq {
+		Id int64 `json:"id"`
+	}
+
+	// 课程导入审核批量入参
+	HubLessonBatchInspectReq {
+		StartId int64 `json:"startId"`
+		EndId   int64 `json:"endId"`
+		Source  int64 `json:"source"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: hub/lesson
+	prefix: /admin/hub/lesson
+)
+service application {
+	@doc ("数据中心-统编教材精讲课堂-快照列表")
+	@handler List
+	get /list(HubLessonListReq) returns(HubLessonListResp)
+
+	@doc ("数据中心-统编教材精讲课堂-快照详情")
+	@handler Detail
+	get /detail(HubLessonDetailReq) returns(HubLessonInfo)
+
+	@doc ("数据中心-统编教材精讲课堂-快照审核")
+	@handler Inspect
+	post /inspect(HubLessonInspectReq) returns(Result)
+}
+
+// 不需要权限
+@server(
+	jwt: JwtAuth
+	group: hub/lesson
+	prefix: /admin/hub/lesson
+)
+service application {
+	@doc ("数据中心-统编教材精讲课堂-快照批量审核")
+	@handler BatchInspect
+	post /batchInspect(HubLessonBatchInspectReq) returns(Result)
+}

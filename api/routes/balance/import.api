@@ -1,0 +1,90 @@
+import "../common.api"
+
+info(
+	desc: "导入用户金额列表"
+)
+
+type (
+	OrderBalanceInfo {
+		Id           int64  `json:"id"`           // 渠道订单ID
+		SubIds       string `json:"subIds"`       // 渠道子订单ID[多个]
+		IsGrant      bool   `json:"isGrant"`      // 是否发放金额
+		OrderNo      string `json:"orderNo"`      // 外部订单号
+		GroupName    string `json:"groupName"`    // 金额名称
+		Phone        string `json:"phone"`        // 手机号
+		UserType     int64  `json:"userType"`     // 用户类型 1.单个子账号 2.主账号
+		OrderType    int64  `json:"orderType"`    // 订单类型 1.发放 2.回收
+		Source       int64  `json:"source"`       // 来源 1.内部员工 2.渠道三部 3.中台 4.蓝V企业店 5.产品运营 6.用户购买
+		IsSmsNotifiy bool   `json:"isSmsNotifiy"` // 是否发送短信通知
+		CreatedAt    int64  `json:"createdAt"`    // 创建时间
+		UpdatedAt    int64  `json:"updatedAt"`    // 更新时间
+	}
+
+	UserBalanceInfo {
+		Id          int64  `json:"id"`          // ID
+		BaseUserId  int64  `json:"baseUserId"`  // 主账号ID
+		Phone       string `json:"phone"`       // 手机号
+		UserId      int64  `json:"userId"`      // 子用户ID
+		RealName    string `json:"realname"`    // 真实姓名
+		Status      int64  `json:"status"`      // 状态 1.有效 2.失效
+		BalanceName string `json:"benefitName"` // 金额名称
+		StartTime   int64  `json:"startTime"`   // 开始时间
+		EndTime     int64  `json:"endTime"`     // 结束时间
+	}
+)
+
+type (
+	// 导入金额列表入参
+	ImportBalanceListReq {
+		Phone   string `form:"phone,optional"`   // 手机号
+		IsGrant int64  `form:"isGrant,optional"` // 是否发放 0.全部[默认] 1.是 2.否
+		OrderNo string `form:"orderNo,optional"` // 订单号查询
+		PageReq
+	}
+	// 导入金额列表出参
+	ImportBalanceListResp {
+		List       []OrderBalanceInfo `json:"list"`
+		Pagination Pagination         `json:"pagination"`
+	}
+
+	// 导入金额详情入参
+	ImportBalanceDescReq {
+		SubIds string `form:"subIds"` // 子导入IDs
+	}
+	// 导入金额详情出参
+	ImportBalanceDescResp {
+		List []UserBalanceInfo `json:"list"`
+	}
+
+	// 用户金额列表入参
+	UserBalanceListReq {
+		Phone  string `form:"phone,optional"`  // 手机号
+		Status int64  `form:"status,optional"` // 状态 1.有效 2.失效
+		PageReq
+	}
+	// 用户金额列表出参
+	UserBalanceListResp {
+		List       []UserBalanceInfo `json:"list"`
+		Pagination Pagination        `json:"pagination"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: benefit
+	prefix: /admin/benefit
+)
+service application {
+	@doc ("导入金额列表")
+	@handler importBalanceList
+	get /importBalanceList(ImportBalanceListReq) returns(ImportBalanceListResp)
+
+	@doc ("导入金额详情")
+	@handler importBalanceDesc
+	get /importBalanceDesc(ImportBalanceDescReq) returns(ImportBalanceDescResp)
+
+	//	@doc ("用户金额列表")
+	//	@handler userBalanceList
+	//	get /userBalanceList(UserBalanceListReq) returns(UserBalanceListResp)
+}

@@ -1,0 +1,141 @@
+import "../common.api"
+import "./import.api"
+
+info(
+	desc: "导入用户权益列表"
+)
+
+type (
+	UserBenefitDetailInfo {
+		Id            int64  `json:"id"`            // ID
+		UserId        int64  `json:"userId"`        // 子用户ID
+		Type          int64  `json:"type"`          // 状态 1.发放 2.回收
+		OrderNo       string `json:"orderNo"`       // 订单号
+		BenefitName   string `json:"benefitName"`   // 权益名称
+		BenefitType   string `json:"benefitType"`   // 权益类型
+		UserBenefitId int64  `json:"userBenefitId"` // 用户权益ID
+		HasBoth       bool   `json:"hasBoth"`       // 标识 相同订单号是否同时有type=1和type=2，即购买后退款
+		Source        string `json:"source"`        // 来源
+		CreatedAt     int64  `json:"createdAt"`     // 添加时间
+	}
+)
+
+type (
+	// 用户权益列表入参
+	UserBenefitListReq {
+		UserId             int64  `form:"userId,optional"`             // 子用户ID
+		Phone              string `form:"phone,optional"`              // 手机号
+		Status             int64  `form:"status,optional"`             // 状态 1.发放 2.回收
+		BenefitsResourceId int64  `form:"benefitsResourceId,optional"` // 资源ID
+		FromTime           string `form:"fromTime,optional"`           // 开始时间
+		EndTime            string `form:"endTime,optional"`            // 结束时间
+		PageReq
+	}
+	// 用户权益列表出参
+	UserBenefitListResp {
+		List       []UserBenefitInfo `json:"list"`
+		Pagination Pagination        `json:"pagination"`
+	}
+
+	// 权益种类列表出参
+	BenefitListResp {
+		Id           int64  `json:"id"`           // 主键ID
+		Name         string `json:"name"`         // 权益名称
+		IsDeprecated bool   `json:"isDeprecated"` // 是否废弃
+	}
+
+	// 用户权益明细列表
+	UserBenefitDetailListReq {
+		UserId             int64  `form:"userId"`             // 子用户ID
+		BenefitsResourceId int64  `form:"benefitsResourceId"` // 资源ID
+		OrderNo            string `form:"orderNo,optional"`   // 订单号
+		Type               int64  `form:"type,optional"`      // 状态 1.发放 2.回收
+		PageReq
+	}
+	UserBenefitDetailListResp {
+		List       []UserBenefitDetailInfo `json:"list"`
+		Pagination Pagination              `json:"pagination"`
+	}
+
+	// 用户权益明细列表
+	UserPhoneModifyReq {
+		Id        int64 `json:"id"`        // ID
+		OldRoleId int64 `json:"oldRoleId"` // 当前用户ID
+		NewRoleId int64 `json:"newRoleId"` // 目标用户ID
+	}
+)
+
+// 权益组列表
+type (
+	GroupListResp {
+		Id           int64  `json:"id"`           // 主键ID
+		Name         string `json:"name"`         // 权益名称
+		IsDeprecated bool   `json:"isDeprecated"` // 是否废弃
+	}
+)
+
+// 新增用户权益
+type (
+	UserBenefitAddReq {
+		GroupId int64  `json:"groupId"` // 权益组主键ID
+		Phone   string `json:"phone"`   // 手机号
+		OrderId string `json:"orderId"` // 订单号
+		Num     int64  `json:"num"`     // 数量
+	}
+)
+
+// 重新发放权益
+type (
+	ReissueReq {
+		UserBenefitId int64 `json:"userBenefitId"` // 用户权益ID
+	}
+)
+
+// 更换权益到另一个子用户下
+type (
+	ChangeBenefitUserReq {
+		BenefitId    int64 `json:"id"`           // 用户权益ID
+		BaseUserId   int64 `json:"baseUserId"`   // 主账号ID
+		TargetUserId int64 `json:"targetUserId"` // 目标子用户ID
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: benefit
+	prefix: /admin/benefit
+)
+service application {
+	@doc ("权益种类")
+	@handler benefitList
+	get /benefitList returns([]BenefitListResp)
+
+	@doc ("用户权益列表")
+	@handler userBenefitList
+	get /userBenefitList(UserBenefitListReq) returns(UserBenefitListResp)
+
+	@doc ("用户权益详情明细")
+	@handler userBenefitDetailList
+	get /userBenefitDetailList(UserBenefitDetailListReq) returns(UserBenefitDetailListResp)
+
+	@doc ("权益手机号变更")
+	@handler userPhoneModify
+	post /userPhoneModify(UserPhoneModifyReq) returns(Result)
+
+	@doc ("权益组列表")
+	@handler groupList
+	get /groupList returns([]GroupListResp)
+
+	@doc ("新增用户权益")
+	@handler UserBenefitAdd
+	post /userBenefitAdd(UserBenefitAddReq) returns(Result)
+
+	@doc ("重新发放权益")
+	@handler Reissue
+	post /reissue(ReissueReq) returns(Result)
+
+	@doc ("更换权益到另一个子用户下")
+	@handler ChangeBenefitUser
+	post /changeBenefitUser(ChangeBenefitUserReq) returns(Result)
+}

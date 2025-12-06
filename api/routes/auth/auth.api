@@ -1,0 +1,48 @@
+info(
+	desc: "临时授权"
+)
+type (
+	// 微软临时授权
+	AzureAuthReq {
+		Type int `form:"type,options=7"` // type=7 TTS授权
+	}
+	AzureAuthResp {
+		Token  string `json:"token"`  // 临时token
+		Region string `json:"region"` // 地区Region
+	}
+	// 腾讯临时授权
+	TencentAuthReq {
+		Type int `form:"type,options=1|2|3|4|5|6|8"` // type=1:OSS文章授权 type=2:OSSapp通用资源授权 type=3:OSSFormula授权 type=4:OSSH5授权 type=5:ASR授权 type=6:TTS授权type=8:数字人图片授权
+	}
+	TencentAuthResp {
+		TmpSecretID  string `json:"tmpSecretId"`
+		TmpSecretKey string `json:"tmpSecretKey"`
+		SessionToken string `json:"sessionToken"`
+		StartTime    string `json:"startTime"`
+		ExpiredTime  string `json:"expiredTime"`
+		RequestId    string `json:"requestId"`
+		Bucket       string `json:"bucket"`
+		Region       string `json:"region"`
+		FileDir      string `json:"fileDir"`
+		StaticUrl    string `json:"StaticUrl"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group: auth
+	prefix: /admin/auth
+)
+service application {
+	@doc ("获取腾讯云服务临时权限")
+	@handler Tencent
+	get /v1/tencent (TencentAuthReq) returns (TencentAuthResp)
+
+	@doc ("获取腾讯云服务临时权限-static")
+	@handler StaticTencent
+	get /v1/static/tencent (TencentAuthReq) returns (TencentAuthResp)
+
+	@doc ("获取微软临时TTS权限")
+	@handler Azure
+	get /v1/azure (AzureAuthReq) returns (AzureAuthResp)
+}

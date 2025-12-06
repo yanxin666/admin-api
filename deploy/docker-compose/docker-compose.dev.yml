@@ -1,0 +1,37 @@
+# 指定docker-compose文件的版本为3
+version: "3"
+# 定义服务
+services:
+  # 服务名称
+  muse-admin-dev:
+    # 容器名称
+    container_name: muse-admin-dev
+    # 容器退出后自动重启
+    restart: always
+    # 使用的镜像版本
+    image: muse-admin:latest
+    # 暴露端口
+    ports:
+      # 宿主机端口:容器端口
+      - "8210:8689"
+    # 挂载卷
+    volumes:
+      # 将宿主机的/tmp/logs/muse-admin-dev目录挂载到容器的/tmp/logs/muse-admin-dev目录，记录日志
+      - "/tmp/logs/muse-admin-dev:/tmp/logs/muse-admin"
+    command: ["/app/application", "-f", "/app/etc/application.dev.yaml"]
+  swagger-muse-admin-dev:
+    container_name: swagger-muse-admin-dev
+    # 容器退出后自动重启
+    restart: always
+    # 使用的镜像版本
+    image: registry-ze.tencentcloudcr.com/basic/swaggerapi/swagger-ui
+    # 暴露端口
+    ports:
+      # 宿主机端口:容器端口
+      - "8211:8080"
+    # 挂载卷
+    volumes:
+      # 将宿主机的/tmp/logs/muse-admin-dev目录挂载到容器的/tmp/logs/muse-admin-dev目录，记录日志
+      - "../../api/swagger/swagger.json:/usr/share/nginx/html/swagger.json"
+    environment:
+      - SWAGGER_JSON=swagger.json

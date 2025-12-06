@@ -1,0 +1,78 @@
+syntax = "v1"
+
+info(
+	title: "muse-admin"
+	desc: "muse-admin"
+	version: "v1.0.0"
+)
+
+@server(
+	group: probe
+)
+service application {
+	@doc ("服务健康检查")
+	@handler ping
+	get /ping
+}
+
+// 用户公共模块
+import "user/user.api"
+
+// 系统管理模块
+import "sys/menu.api"
+import "sys/role.api"
+import "sys/dept.api"
+import "sys/job.api"
+import "sys/profession.api"
+import "sys/user.api"
+
+// 配置管理模块
+import "config/dict.api"
+
+// 日志管理模块
+import "log/log.api"
+
+// 会员模块
+import "member/member.api"
+import "member/white.api"
+
+// 任务模块
+import "public/task.api"
+
+// 权益模块
+import "benefit/import.api"
+import "benefit/user.api"
+
+// 课程模块
+import "lesson/lesson.api"
+import "lesson/super_train.api"
+
+// 订单管理
+import "order/order.api"
+
+// 数据中心
+import "hub/lesson.api"
+import "hub/live.api"
+import "hub/super_train.api"
+
+// 直播中心
+import "live/white_list.api"
+import "live/live.api"
+
+// 兑换码
+import "code/code.api"
+
+// 用户行为
+import "behavior/session.api"
+
+// 豆神王者模块
+import "kingclub/course.api"
+
+// 三方临时Auth模块
+import "auth/auth.api"
+
+// 字典模块
+import "dictionary/muse.api"
+
+// 督学模块
+import "supervisor/supervisor.api"

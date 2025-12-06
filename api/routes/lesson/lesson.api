@@ -1,0 +1,123 @@
+import "../common.api"
+
+info(
+	title: "课程管理"
+	desc: "课程管理-统编教材精讲课堂"
+)
+
+// 课程相关公共部分
+type (
+	LessonInfo {
+		LessonId      int64           `json:"lessonId"`      // 课程ID
+		LessonNo      string          `json:"lessonNo"`      // 课程来源编号，导入时使用
+		LessonGroupNo string          `json:"lessonGroupNo"` // 课程组编号
+		ParentId      int64           `json:"parentId"`      // 导入数据时使用，只有大语文才会用到，用作关联父子级
+		Level         int64           `json:"level"`         // 难度等级 只有小灶课才会使用，1-4个等级
+		Name          string          `json:"name"`          // 课节名称
+		LessonType    int64           `json:"lessonType"`    // 课程类型 1.主线课 2.月考 3.小灶课
+		ReviewStatus  int64           `json:"reviewStatus"`  // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		Title         string          `json:"title"`         // 标题
+		SubTitle      string          `json:"sub_title"`     // 副标题
+		LearnTarget   []string        `json:"learn_target"`  // 学习目标
+		Remark        string          `json:"remark"`        // 备注
+		Grade         int64           `json:"grade"`         // 年级 10.学龄前 11.一年级 12.二年级 13.三年级 14.四年级 15.五年级 16.六年级 20.中小衔接 21.初一 22.初二 23.初三 31.高一 32.高二 33.高三 41.大学语文 42.中文专业 43.文学专家
+		SubList       []LessonSubInfo `json:"list"`          // 题目列表
+		CreatedAt     int64           `json:"createdAt"`     // 创建时间
+		UpdatedAt     int64           `json:"updatedAt"`     // 更新时间
+	}
+	LessonSubInfo {
+		NodeType        int64  `json:"nodeType"`        // 导入数据时使用，节点类型 1.小灶课 2.小语文 3.大语文
+		QuestionId      int64  `json:"questionId"`      // 题目ID
+		QuestionNo      string `json:"questionNo"`      // 题目编号
+		Type            int64  `json:"type"`            // 试题类型 1.单选 2.多选 3.填空 4.判断 5.简答 6.阅读题 7.作文
+		UsageType       int64  `json:"usageType"`       // 使用类型 1.例题 2.练习题
+		GradePhase      int64  `json:"gradePhase"`      // 年级学段 1.小学 2.初中 3.高中
+		ReviewStatus    int64  `json:"reviewStatus"`    // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		Level           int64  `json:"level"`           // 等级
+		ExampleId       int64  `json:"exampleId"`       // 例题ID
+		MaterialId      int64  `json:"materialId"`      // 素材ID
+		MaterialContent string `json:"materialContent"` // 素材内容，比如选取的阅读素材片段
+		Ask             string `json:"ask"`             // 问题
+		Answer          string `json:"answer"`          // 答案
+		Analysis        string `json:"analysis"`        // 题目解析
+		CreatedAt       int64  `json:"createdAt"`       // 创建时间
+		UpdatedAt       int64  `json:"updatedAt"`       // 更新时间
+	}
+)
+
+type (
+	// 课程列表
+	LessonListReq {
+		LessonId int64  `form:"lessonId,optional"` // 课程ID
+		LessonNo int64  `form:"lessonNo,optional"` // 课程编号
+		Name     string `form:"name,optional"`     // 课程名称
+		Title    string `form:"title,optional"`    // 主标题
+		SubTitle string `form:"subTitle,optional"` // 副标题
+		Status   int64  `form:"status,optional"`   // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		Grade    int64  `form:"grade,optional"`    // 年级 10.学龄前 11.一年级 12.二年级 13.三年级 14.四年级 15.五年级 16.六年级 20.中小衔接 21.初一 22.初二 23.初三 31.高一 32.高二 33.高三 41.大学语文 42.中文专业 43.文学专家
+
+		QuestionId        int64  `form:"questionId,optional"`        // 题目ID
+		QuestionNo        string `form:"questionNo,optional"`        // 题目编号
+		QuestionUsageType int64  `form:"questionUsageType,optional"` // 使用类型 1.例题 2.练习题 3.候补题
+		QuestionNodeType  int64  `form:"questionNodeType,optional"`  // 节点类型 1.小灶课 2.小语文 3.大语文
+		QuestionType      int64  `form:"questionType,optional"`      // 试题类型 1.单选 2.多选 3.填空 4.判断 5.简答 6.阅读题 7.作文
+		QuestionStatus    int64  `form:"questionStatus,optional"`    // 题目审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		QuestionAsk       string `form:"questionAsk,optional"`       // 题目问题
+
+		PageReq
+	}
+	LessonListResp {
+		List       []LessonInfo `json:"list"`
+		Pagination Pagination   `json:"pagination"`
+	}
+
+	// 例题详情
+	LessonExampleReq {
+		ExampleId int64 `form:"exampleId"`
+	}
+	LessonExampleResp {
+		Content string `json:"content"` // 题目解析
+	}
+
+	// 课程详情
+	LessonDetailReq {
+		UserId int64 `form:"userId"`
+	}
+
+	// 课程编辑
+	LessonEditReq {
+		UserId   int64  `json:"userId"`
+		Name     string `json:"name"`               // 姓名
+		Grade    int64  `json:"grade,range=[1:13]"` // 年级
+		Gender   int64  `json:"gender,options=1|2"` // 性别
+		Province int64  `json:"province"`           // 省
+		City     int64  `json:"city,default=0"`     // 市 默认0
+	}
+	LessonEditResp {
+		Result bool `json:"result"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : lesson
+	prefix : /admin/lesson
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "课程列表"
+	@handler LessonList
+	get /list (LessonListReq) returns (LessonListResp)
+
+	@doc "例题详情"
+	@handler LessonExample
+	get /example (LessonExampleReq) returns (LessonExampleResp)
+
+	//	@doc "课程详情"
+	//	@handler LessonDetail
+	//	get /detail (MemberDetailReq) returns (MemberInfo)
+
+	//	@doc "课程编辑"
+	//	@handler MemberEdit
+	//	post /edit (MemberEditReq) returns (MemberEditResp)
+}

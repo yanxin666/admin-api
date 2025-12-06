@@ -1,0 +1,31 @@
+syntax = "v1"
+
+info(
+	desc: "接口通用参数"
+)
+
+type (
+	PageReq {
+		Page  int64 `form:"page,optional"  validate:"number,gte=1"  label:"页数"`
+		Limit int64 `form:"limit,optional" validate:"number,gte=1"  label:"条数"`
+	}
+	Pagination {
+		Page  int64 `json:"page"`
+		Limit int64 `json:"limit"`
+		Total int64 `json:"total"`
+	}
+
+	TimeFilter {
+		StartTime string `form:"startTime,optional" validate:"datetime" label:"开始时间"`
+		EndTime   string `form:"endTime,optional"   validate:"datetime" label:"结束时间"`
+	}
+
+	UserInfo {
+		Id       int64  `json:"id"`
+		Username string `json:"username"`
+	}
+
+	Result {
+		Result bool `json:"result"` // 结果是否成功
+	}
+)

@@ -1,0 +1,24 @@
+# 指定docker-compose文件的版本为3
+version: "3"
+# 定义服务
+services:
+  # 服务名称
+  muse-admin:
+    # 容器名称
+    container_name: muse-admin
+    # 容器退出后自动重启
+    restart: always
+    # 使用的镜像版本
+    image: muse-admin:latest
+    # 暴露端口
+    ports:
+      # 将容器的8689端口映射到宿主机的8050端口
+      - "8050:8689"
+    # 挂载卷
+    volumes:
+      # 将宿主机的/tmp/logs/muse-admin目录挂载到容器的/tmp/logs/muse-admin目录，记录日志
+      - "/tmp/logs/muse-admin:/tmp/logs/muse-admin"
+    environment:
+      - NODE_ENV=pro
+    command: ["/app/application", "-f", "/app/etc/application.pre.yaml"]
+# 线上环境只启动服务本身

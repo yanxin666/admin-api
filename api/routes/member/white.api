@@ -1,0 +1,80 @@
+import "../common.api"
+
+info(
+	title: "会员管理"
+	desc: "会员管理"
+)
+
+type (
+	// 白名单列表
+	WhiteListReq {
+		Phone     string `form:"phone,optional"`     // 手机号
+		StartTime string `form:"startTime,optional"` // 开始时间
+		EndTime   string `form:"endTime,optional"`   // 结束时间
+		Product   string `form:"product,optional"`   // 产品线 0.辞源 1.AI搜索 2.白帝辞 3.智普乌托邦(1001~1002) 4.豆子机器人
+		Source    string `form:"source,optional"`    // 首次登录 100.提审标记 0.APP 1.豆伴匠 2.风的颜色 1001.听力熊 1002.微软
+		Status    string `form:"status,optional"`    // 账号状态 0.正常 1.冻结 2.注销
+		Remark    string `form:"remark,optional"`    // 备注
+		PageReq
+	}
+	WhiteListResp {
+		List       []WhiteInfo `json:"list"`
+		Pagination Pagination  `json:"pagination"`
+	}
+	WhiteInfo {
+		Id        int64  `json:"id"`        // ID
+		Phone     string `json:"phone"`     // 手机号
+		StartTime int64  `json:"startTime"` // 开始时间
+		EndTime   int64  `json:"endTime"`   // 结束时间
+		Product   int64  `json:"product"`   // 产品线 0.辞源 1.AI搜索 2.白帝辞 3.智普乌托邦(1001~1002) 4.豆子机器人
+		Source    int64  `json:"source"`    // 首次来源 100.提审标记 0.APP 1.豆伴匠 2.风的颜色 1001.听力熊 1002.微软
+		Status    int64  `json:"status"`    // 状态 1.正常 2.失效
+		Remark    string `json:"remark"`    // 备注
+		CreatedAt int64  `json:"createdAt"` // 创建时间
+		UpdatedAt int64  `json:"updatedAt"` // 修改时间
+	}
+)
+
+// 白名单编辑
+type (
+	WhiteEditReq {
+		Id      int64    `json:"id,optional" validate:"number"       label:"用户ID"`
+		Phone   string   `json:"phone"                               label:"手机号"`
+		Date    []string `json:"date"        validate:"len=2"        label:"生效时间"`
+		Product int64    `json:"product"     validate:"number,gte=0" label:"产品线"`
+		Source  int64    `json:"source"      validate:"number,gte=0" label:"来源"`
+		Status  int64    `json:"status"      validate:"number,gt=0"  label:"状态"`
+		Remark  string   `json:"remark,optional"                     label:"备注"`
+	}
+)
+
+// 白名单删除
+type (
+	WhiteDeleteReq {
+		Id int64 `json:"id"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : member
+	prefix : /admin/member/white
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "白名单列表"
+	@handler WhiteList
+	get /list (WhiteListReq) returns (WhiteListResp)
+
+	@doc "新增白名单"
+	@handler WhiteAdd
+	post /add (WhiteEditReq) returns (Result)
+
+	@doc "修改白名单"
+	@handler WhiteEdit
+	post /edit (WhiteEditReq) returns (Result)
+
+	@doc "删除白名单"
+	@handler WhiteDelete
+	post /delete (WhiteDeleteReq) returns (Result)
+}

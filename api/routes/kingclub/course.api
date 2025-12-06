@@ -1,0 +1,86 @@
+import "../common.api"
+
+info(
+	title: "王者 club 课程"
+	desc: "王者 club 课程"
+)
+
+type (
+	SeriesType {
+		SeriesType     int    `json:"series_type"`
+		SeriesTypeName string `json:"series_type_name"`
+	}
+	CourseType {
+		CourseType     int    `json:"course_type"`
+		CourseTypeName string `json:"course_type_name"`
+	}
+	Teacher {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+	TaskType {
+		TaskType     int    `json:"task_type"`
+		TaskTypeName string `json:"task_type_name"`
+	}
+	SubTaskType {
+		SubTaskType     int    `json:"sub_task_type"`
+		SubTaskTypeName string `json:"sub_task_type_name"`
+	}
+
+	CourseCommonData {
+		SeriesTypeList  []SeriesType  `json:"series_type_list"`
+		CourseTypeList  []CourseType  `json:"course_type_list"`
+		TeacherIds      []Teacher     `json:"teacher_ids"`
+		TaskTypeList    []TaskType    `json:"task_type_list"`
+		SubTaskTypeList []SubTaskType `json:"sub_task_type_list"`
+	}
+)
+
+type (
+	GetCourseChapterReq {
+		CourseId int64 `form:"courseId"` // 课程ID
+	}
+
+	GetCourseChapterResp {
+		ChapterList []CourseChapter `json:"chapterList"`
+	}
+	CourseChapter {
+		Id        int64  `json:"id"`        // 章节ID
+		CourseId  int64  `json:"courseId"`  // 课程ID
+		ChapterNo string `json:"chapterNo"` // 编号
+		Name      string `json:"name"`      // 名字
+		Title     string `json:"title"`     // 精简版标题
+	}
+
+	GetChapterTaskReq {
+		ChapterId int64 `form:"chapterId"` // 章节ID
+	}
+
+	GetChapterTaskResp {
+		TaskList []ChapterTask `json:"taskList"`
+	}
+	ChapterTask {
+		Id        int64  `json:"id"`        // 任务ID
+		ChapterId int64  `json:"chapterId"` // 章节ID
+		TaskNo    string `json:"taskNo"`    // 编号
+		Title     string `json:"title"`     // 名字
+	}
+)
+
+@server(
+	group: kingclub/course
+	prefix: /admin/kingclub
+)
+service application {
+	@doc ("获取课程公共数据")
+	@handler GetCourseCommonData
+	get /getCourseCommonData returns(CourseCommonData)
+
+	@doc ("获取章节列表")
+	@handler GetCourseChapter
+	get /getCourseChapter(GetCourseChapterReq) returns(GetCourseChapterResp)
+
+	@doc ("获取章节任务列表")
+	@handler GetChapterTask
+	get /getChapterTask(GetChapterTaskReq) returns(GetChapterTaskResp)
+}

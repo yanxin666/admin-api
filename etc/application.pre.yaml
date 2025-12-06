@@ -1,0 +1,122 @@
+Name: application
+Host: 0.0.0.0
+Port: 8689
+Mode: pre
+Timeout: 120000
+Salt: K8i8mTfc5sTXO7OG
+
+Log:
+  ServiceName: muse-admin
+  Mode: file
+  Encoding: json
+  Path: /tmp/logs/muse-admin
+  Level: info
+  KeepDays: 7
+
+JwtAuth:
+  AccessSecret: fed7c5f5-3ed3-44b7-9685-9a868a287ddd
+  AccessExpire: 604800 # 时效性为一周
+
+Mysql:
+#  DataSourceAdmin: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_admin?charset=utf8mb4&parseTime=True&loc=Local
+#  DataSourceAbility: ai_ability_api_prod:pR68#GuEj0YHyNMnv@tcp(bj-cdb-lsrryt52.sql.tencentcdb.com:59513)/muse_ability?charset=utf8mb4&parseTime=True&loc=Local
+#  DataSourceCenter: ai_passport_api_prod:MDW6#yuFnsvU8vRRc@tcp(bj-cdb-lsrryt52.sql.tencentcdb.com:59513)/muse_center?charset=utf8mb4&parseTime=True&loc=Local
+#  DataSourceHub: root:qOnFC?wvbF*&HvT@tcp(49.232.253.114:3306)/muse_hub?charset=utf8mb4&parseTime=True&loc=Local
+#  DataSourceKingClub: king_club:5MC4e2thQfRZ3Epv@tcp(172.26.16.7:3306)/king_club?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceAdmin: ai_ability_api_preview:pK73dMu3yGJdvWKB@tcp(172.26.16.7)/muse_admin?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceAbility: ai_ability_api_preview:pK73dMu3yGJdvWKB@tcp(172.26.16.7)/muse_ability?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceCenter: ai_ability_api_preview:pK73dMu3yGJdvWKB@tcp(172.26.16.7)/muse_center?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceHub: ai_ability_api_preview:pK73dMu3yGJdvWKB@tcp(172.26.16.7)/muse_hub?charset=utf8mb4&parseTime=True&loc=Local
+  DataSourceKingClub: ai_ability_api_preview:pK73dMu3yGJdvWKB@tcp(172.26.16.13:3306)/king_club?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConn: 100
+  MaxIdleConn: 10
+  ConnMaxLifetime: 60
+  ConnMaxIdleTime: 60
+
+Cache:
+  - Host: 172.26.16.4:6379
+    Pass: bpL3NjeMp4FkV3yu
+    Type: cluster
+
+Redis:
+  Host: 172.26.16.4:6379
+  Pass: bpL3NjeMp4FkV3yu
+  Type: node
+
+# 密文所需加密密钥，需要保密，确保安全性，禁止更改
+EncryptKey: u0dsqguu5vum2us1
+
+Cls:
+  Endpoint: ap-beijing.cls.tencentcs.com
+  TopicID: 152c705e-d03e-47ae-899d-162bc88b7ee5
+
+TencentCloud:
+  SecretId: AKID76yrY1Lf3b7Mal5JTchpz2xmR5b8lV8c
+  SecretKey: e8ORFvPk9Y6okds20qZDoMivwu5WtDSf
+  SmsAppId: '1400838906'
+  SmsSign: 知明而行科技
+  SmsSize: 6
+  SmsSendLimit: 10
+
+Im:
+  AppId: 1600030250
+  Key: 7ca5f169fce24baa6fe1f945ccaf843980ddbd5123fc67f803f83c1154823b7a
+
+#xxl-job
+XxlJob:
+  # 配置中心域名
+  Host: http://49.232.253.114:8800/xxl-job-admin
+  # 访问令牌
+  AccessToken: Lpoms_xxljob_default_token
+  # port 自定义port
+  Port: "9995"
+  #RegistrerKey 关联任务调度执行器名称
+  RegistryKey: ability-api
+
+# OSS
+Oss:
+  #可从oss秘钥管理里查看
+  SecretId: AKID76yrY1Lf3b7Mal5JTchpz2xmR5b8lV8c
+  #可从oss秘钥管理里查看
+  SecretKey: e8ORFvPk9Y6okds20qZDoMivwu5WtDSf
+  #账号的APPID
+  Appid: 1318590712
+  #桶的名称
+  Bucket: static-test-pre-1318590712
+  # 新开桶 带有生命周期30天
+  BehaviorBucket: muse-event-1318590712
+  #桶所在的地区-北京
+  Region: ap-beijing
+  ReplaceDomain: https://static-test-pre.zmexing.com
+
+#RocketMQ配置（腾讯云）
+RocketMQ:
+  # 服务地址
+  EndPoint: rmq-8v9gnzp9o.rocketmq.bj.qcloud.tencenttdmq.com:8080
+  # AccessKey
+  AccessKey: ak8v9gnzp9ocb22a29a9c61
+  # SecretKey
+  SecretKey: sk9b80b588d8c7ffd5
+  # 生产重试次数
+  ProducerRetryTime: 3
+  # 生产者超时时间
+  ProducerTimeout: 10
+  # 日志等级 debug/warn/error/info
+  LogLevel: "error"
+  # 日志根目录
+  LogRoot: "/tmp/logs/rocketmq"
+  # 是否开启控制台输出
+  LogConsole: "false"
+  # 环境
+  Env: "pre"
+
+RpcTarget:
+  Passport: passport.preview:80
+  Ability : ability.preview:80
+  Core: king-club-core-service.preview:80
+
+# 音频配置
+MiniMax:
+  ApiKey: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiLljJfkuqznn6XmmI7ogIzooYznvZHnu5znp5HmioDmnInpmZDlhazlj7giLCJVc2VyTmFtZSI6IumSseS4m-eZuyIsIkFjY291bnQiOiIiLCJTdWJqZWN0SUQiOiIxNzI4NzEyMzI0OTc5NjI2ODA3IiwiUGhvbmUiOiIxODUxNTU5ODUzMSIsIkdyb3VwSUQiOiIxNzI4NzEyMzI0OTcxMjM4MTk5IiwiUGFnZU5hbWUiOiIiLCJNYWlsIjoiemhpbWluZ2VyeGluZ0Bkb3V5dXhpbmdjaGVuLmNvbSIsIkNyZWF0ZVRpbWUiOiIyMDI0LTA3LTE4IDEwOjU3OjEzIiwiaXNzIjoibWluaW1heCJ9.VVd_RGMaTqOnD_pHDsr6G0ynaAIiCMZ0hSCdS3Q2u4kyoLnXIRlAiLDhAHaVw1x_7p08nPh4f7AJDkVoo6-0r2NolKlg4mLs2wsFYVd4XLlo6QYD3Zu8pIA8l8sROjHb1M8RJQf15gNYekkjXfXx0sJU-g_7rofZiwRNGn6XzlA6vmSt0056RYBlEYkb36Va_qHRJPzeKr2GqaB70O88-e7m6yUs4TdIhBWbOv6k5Tt5w6KdczOPB924uzBK7evmuAAkIzyvB24czE-YId5m9wp5jEeXZy3Te9sCTct1N6x6wAl3w-G5jRx5OoK8xyS7Y7YR82tNoFXULbZZDZID4w
+  GroupIds:
+    CiYuan: "1728712324971238199"

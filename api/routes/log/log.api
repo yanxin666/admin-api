@@ -1,0 +1,36 @@
+import "../common.api"
+
+info(
+	title: "日志"
+	desc: "日志"
+)
+
+type (
+	LogLogin {
+		Id         int64  `json:"id"`
+		Account    string `json:"account"`
+		Ip         string `json:"ip"`
+		Uri        string `json:"uri"`
+		Status     int64  `json:"status"`
+		CreateTime string `json:"createTime"`
+	}
+	LogLoginPageReq {
+		PageReq
+	}
+	LogLoginPageResp {
+		List       []LogLogin `json:"list"`
+		Pagination Pagination `json:"pagination"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : log/login
+	prefix : /admin/log/login
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "分页日志"
+	@handler GetLogLoginPage
+	get /page (LogLoginPageReq) returns (LogLoginPageResp)
+}

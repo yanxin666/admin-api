@@ -1,0 +1,79 @@
+import "../common.api"
+
+info(
+	desc: "导入用户权益列表"
+)
+
+type (
+	OrderBenefitInfo {
+		Id           int64  `json:"id"`           // 渠道订单ID
+		IsGrant      bool   `json:"isGrant"`      // 是否发放权益
+		OrderNo      string `json:"orderNo"`      // 外部订单号
+		GroupName    string `json:"groupName"`    // 权益名称
+		Phone        string `json:"phone"`        // 手机号
+		UserType     int64  `json:"userType"`     // 用户类型 1.单个子账号 2.主账号
+		OrderType    int64  `json:"orderType"`    // 订单类型 1.发放 2.回收
+		Source       string `json:"source"`       // 来源
+		IsSmsNotifiy bool   `json:"isSmsNotifiy"` // 是否发送短信通知
+		CreatedAt    int64  `json:"createdAt"`    // 创建时间
+		UpdatedAt    int64  `json:"updatedAt"`    // 更新时间
+	}
+
+	UserBenefitInfo {
+		Id                 int64  `json:"id"`                 // ID
+		BaseUserId         int64  `json:"baseUserId"`         // 主账号ID
+		UserNo             string `json:"userNo"`             // 用户编号
+		Phone              string `json:"phone"`              // 手机号
+		UserId             int64  `json:"userId"`             // 子用户ID
+		RealName           string `json:"realname"`           // 真实姓名
+		BenefitsResourceId int64  `json:"benefitsResourceId"` // 资源ID
+		Status             int64  `json:"status"`             // 状态 1.发放 2.回收
+		BenefitName        string `json:"benefitName"`        // 权益名称
+		GrantCount         int64  `json:"grantCount"`         // 发放数量
+		ReclaimCount       int64  `json:"reclaimCount"`       // 回收数量
+		StartTime          int64  `json:"startTime"`          // 开始时间
+		EndTime            int64  `json:"endTime"`            // 结束时间
+		CreatedAt          int64  `json:"createdAt"`          // 创建时间
+		UpdatedAt          int64  `json:"updatedAt"`          // 更新时间
+	}
+)
+
+type (
+	// 导入权益列表入参
+	ImportBenefitListReq {
+		Phone   string `form:"phone,optional"`   // 手机号
+		IsGrant int64  `form:"isGrant,optional"` // 是否发放 0.全部[默认] 1.是 2.否
+		OrderNo string `form:"orderNo,optional"` // 订单号查询
+		PageReq
+	}
+	// 导入权益列表出参
+	ImportBenefitListResp {
+		List       []OrderBenefitInfo `json:"list"`
+		Pagination Pagination         `json:"pagination"`
+	}
+
+	// 导入权益详情入参
+	ImportBenefitDescReq {
+		ChannelOrderId int64 `form:"channelOrderId"` // 渠道主表ID
+	}
+	// 导入权益详情出参
+	ImportBenefitDescResp {
+		List []UserBenefitInfo `json:"list"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: benefit
+	prefix: /admin/benefit
+)
+service application {
+	@doc ("导入权益列表")
+	@handler importBenefitList
+	get /importBenefitList(ImportBenefitListReq) returns(ImportBenefitListResp)
+
+	@doc ("导入权益详情")
+	@handler importBenefitDesc
+	get /importBenefitDesc(ImportBenefitDescReq) returns(ImportBenefitDescResp)
+}

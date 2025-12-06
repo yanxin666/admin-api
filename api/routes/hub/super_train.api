@@ -1,0 +1,103 @@
+import "../common.api"
+
+info(
+	desc: "数据中心 超能训练"
+)
+
+type (
+	HubSuperTrainInfo {
+		Id            int64  `json:"id"`
+		No            string `json:"no"`            // 课节编号
+		Name          string `json:"name"`          // 课程名称
+		Status        int64  `json:"status"`        // 审核状态 1.初始录入 2.审核中 3.审核通过 4.未通过 5.下架
+		Version       int64  `json:"version"`       // 版本号
+		OperateStatus int64  `json:"operateStatus"` // 操作状态 0.未推送 1.已推送 2.已下架
+		OperateName   string `json:"operateName"`   // 操作人名称
+		Data          string `json:"data"`          // 原始数据
+		AppVersion    string `json:"appVersion"`    // APP版本
+		CreatedAt     int64  `json:"createdAt"`     // 接收数据时间
+		UpdatedAt     int64  `json:"updatedAt"`     // 最后一次审核时间
+	}
+)
+
+type (
+	// 课程导入列表入参
+	HubSuperTrainListReq {
+		Id            int64  `form:"id,optional"`
+		No            string `form:"no,optional"`            // 课程编号
+		Name          string `form:"name,optional"`          // 课程名称
+		Status        int64  `form:"status,optional"`        // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		OperateStatus int64  `form:"operateStatus,optional"` // 操作状态 0.未推送 1.已推送 2.已下架
+		PageReq
+	}
+	// 课程导入列表出参
+	HubSuperTrainListResp {
+		List       []HubSuperTrainInfo `json:"list"`
+		Pagination Pagination          `json:"pagination"`
+	}
+
+	// 课程导入详情入参
+	HubSuperTrainDetailReq {
+		Id int64 `form:"id"`
+	}
+
+	// 课程导入审核入参
+	HubSuperTrainInspectReq {
+		Id int64 `json:"id"`
+	}
+
+	// 课程导入审核批量入参
+	HubSuperTrainBatchInspectReq {
+		StartId int64 `json:"startId"`
+		EndId   int64 `json:"endId"`
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	middleware: PermMenuAuth
+	group: hub/supertrain
+	prefix: /admin/hub/superTrain
+)
+service application {
+	@doc("数据中心-超能训练-快照列表")
+	@handler List
+	get /list (HubSuperTrainListReq) returns (HubSuperTrainListResp)
+
+	@doc("数据中心-超能训练-快照详情")
+	@handler Detail
+	get /detail (HubSuperTrainDetailReq) returns (HubSuperTrainInfo)
+
+	@doc("数据中心-超能训练-快照审核")
+	@handler Inspect
+	post /inspect (HubSuperTrainInspectReq) returns (Result)
+}
+
+// 不需要权限
+@server(
+	jwt: JwtAuth
+	group: hub/supertrain
+	prefix: /admin/hub/superTrain
+)
+service application {
+	@doc("数据中心-超能训练-快照批量审核")
+	@handler BatchInspect
+	post /batchInspect (HubSuperTrainBatchInspectReq) returns (Result)
+}
+
+// 超能训练MQ模型
+type (
+	HubSuperTrainSyncReq {
+		Data string `json:"data"`
+	}
+)
+// 不需要登录和权限
+@server(
+	group: hub/supertrain
+	prefix: /admin/hub/superTrain
+)
+service application {
+	@doc("数据同步")
+	@handler Sync
+	post /sync (HubSuperTrainSyncReq) returns (Result)
+}

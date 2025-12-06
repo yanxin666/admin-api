@@ -1,0 +1,152 @@
+import "../common.api"
+
+info(
+	title: "会员管理"
+	desc: "会员管理"
+)
+
+// 会员相关公共部分
+type (
+	MemberInfo {
+		BaseUserId int64           `json:"baseUserId"` // 主用户ID
+		UserNo     string          `json:"userNo"`     // 用户编号
+		Phone      string          `json:"phone"`      // 手机号
+		Product    int64           `json:"product"`    // 产品线 0.辞源 1.AI搜索 2.白帝辞 3.智普乌托邦(1001~1002) 4.豆子机器人
+		Source     int64           `json:"source"`     // 首次来源 100.提审标记 0.APP 1.豆伴匠 2.风的颜色 1001.听力熊 1002.微软
+		Status     int64           `json:"status"`     // 状态 0.正常 1.冻结 2.注销
+		Remark     string          `json:"remark"`     // 备注
+		SubList    []MemberSubInfo `json:"list"`       // 子用户列表
+		CreatedAt  int64           `json:"createdAt"`  // 创建时间
+		UpdatedAt  int64           `json:"updatedAt"`  // 最近登录时间
+		RecentlyAt int64           `json:"recentlyAt"` // 子用户最近一次登录时间
+	}
+	MemberSubInfo {
+		BaseUserId     int64  `json:"baseUserId"`     // 主用户ID
+		UserId         int64  `json:"userId"`         // 用户ID
+		RoleType       int64  `json:"role"`           // 角色类型 1.孩子[默认] 2.家长
+		Nickname       string `json:"nickname"`       // 昵称
+		RealName       string `json:"realName"`       // 姓名
+		Avatar         string `json:"avatar"`         // 头像
+		Gender         int64  `json:"gender"`         // 性别 0.未知 1.男 2.女
+		Grade          int64  `json:"grade"`          // 年级 10.学龄前 11.一年级 12.二年级 13.三年级 14.四年级 15.五年级 16.六年级 20.中小衔接 21.初一 22.初二 23.初三 31.高一 32.高二 33.高三 41.大学语文 42.中文专业 43.文学专家
+		Birthday       string `json:"birthday"`       // 生日[年月日]
+		Region         string `json:"region"`         // 地区
+		IsInfoFinished int64  `json:"isInfoFinished"` // 是否完善信息 1.未完善 2.已完善
+		VipName        string `json:"vipName"`        // 会员名称
+		VipType        int64  `json:"vipType"`        // 会员类型 1.豆神会员（基础版） 2.豆神会员（典藏版） 3.豆神超级会员 4.豆神会员（特别版）
+		IsVipValid     bool   `json:"isVipValid"`     // 会员是否到期
+		VipEndTime     int64  `json:"vipEndTime"`     // 会员过期时间
+		Status         int64  `json:"status"`         // 状态 0.正常 1.冻结 2.注销
+		Remark         string `json:"remark"`         // 备注
+		CreatedAt      int64  `json:"createdAt"`      // 创建时间
+		UpdatedAt      int64  `json:"updatedAt"`      // 更新时间
+		TencentLogURL  string `json:"tencentLogURL"`  // 腾讯云日志URL
+	}
+)
+
+type (
+	// 会员列表
+	MemberListReq {
+		Id      string `form:"baseUserId,optional"` // 主用户ID
+		UserId  string `form:"userId,optional"`     // 子用户ID
+		Phone   string `form:"phone,optional"`      // 手机号
+		Product string `form:"product,optional"`    // 产品线 0.辞源 1.AI搜索 2.白帝辞 3.智普乌托邦(1001~1002) 4.豆子机器人
+		Source  string `form:"source,optional"`     // 首次登录 100.提审标记 0.APP 1.豆伴匠 2.风的颜色 1001.听力熊 1002.微软
+		Status  string `form:"status,optional"`     // 账号状态 0.正常 1.冻结 2.注销
+		PageReq
+	}
+	MemberListResp {
+		List       []MemberInfo `json:"list"`
+		Pagination Pagination   `json:"pagination"`
+	}
+
+	// 获取手机号
+	MemberGetPhoneReq {
+		BaseUserId int64 `form:"baseUserId"`
+	}
+	MemberGetPhoneResp {
+		Phone int64 `json:"phone"`
+	}
+
+	// 注销用户
+	MemberLogOffReq {
+		UserId int64 `json:"userId"`
+	}
+	MemberLogOffResp {
+		Result bool `json:"result"`
+	}
+
+	// 会员详情
+	MemberDetailReq {
+		UserId int64 `form:"userId"`
+	}
+
+	// 会员编辑
+	MemberEditReq {
+		UserId   int64  `json:"userId"`
+		Name     string `json:"name"`               // 姓名
+		Grade    int64  `json:"grade,range=[1:13]"` // 年级
+		Gender   int64  `json:"gender,options=1|2"` // 性别
+		Province int64  `json:"province"`           // 省
+		City     int64  `json:"city,default=0"`     // 市 默认0
+	}
+	MemberEditResp {
+		Result bool `json:"result"`
+	}
+
+	// 导出会员
+	ExportMemberReq {
+		MemberListReq
+		ExportType int64 `form:"exportType"` // 是否导出 1.导出所有 2.导出本页
+	}
+	ExportMemberResp {
+		Url string `json:"url"` // 导出文件地址
+	}
+)
+
+// 根据手机号获取角色列表
+type (
+	GetRoleListReq {
+		Phone   string `form:"phone"`   // 手机号
+		Product int64  `form:"product"` // 产品线 0.辞源 1.AI搜索 2.白帝辞 3.智普乌托邦(1001~1002) 4.豆子机器人
+	}
+	GetRoleListResp {
+		List []MemberSubInfo `json:"list"` // 角色列表
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : member
+	prefix : /admin/member
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "会员列表"
+	@handler MemberList
+	get /list (MemberListReq) returns (MemberListResp)
+
+	@doc "获取手机号"
+	@handler GetPhone
+	get /getPhone (MemberGetPhoneReq) returns (MemberGetPhoneResp)
+
+	@doc "注销用户"
+	@handler LogOff
+	post /logOff (MemberLogOffReq) returns (MemberLogOffResp)
+
+	//	@doc "会员详情"
+	//	@handler MemberDetail
+	//	get /detail (MemberDetailReq) returns (MemberInfo)
+
+	//	@doc "会员编辑"
+	//	@handler MemberEdit
+	//	post /edit (MemberEditReq) returns (MemberEditResp)
+
+	@doc "导出待发货列表"
+	@handler Export
+	get /export (ExportMemberReq) returns (ExportMemberResp)
+
+	@doc "根据手机号获取角色列表"
+	@handler GetRoleList
+	get /getRoleList (GetRoleListReq) returns (GetRoleListResp)
+}

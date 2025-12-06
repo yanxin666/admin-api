@@ -1,0 +1,110 @@
+import "../common.api"
+
+info(
+	title: "课程管理"
+	desc: "课程管理-超能训练"
+)
+
+// 课程相关公共部分
+type (
+	SuperTrainInfo {
+		CourseId   int64               `json:"courseId,optional"`   // 课程ID
+		CourseNo   string              `json:"courseNo,optional"`   // 课程编号
+		CourseType int64               `json:"courseType,optional"` // 课程类型 1.写作慢练 2.写作快练 3.超练阅读
+		Name       string              `json:"name,optional"`       // 课程名称
+		Image      string              `json:"image,optional"`      // 课程封面图
+		Intro      string              `json:"intro,optional"`      // 课程介绍
+		Status     int64               `json:"status,optional"`     // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		OpenTime   int64               `json:"openTime,optional"`   // 开放时间
+		Extra      string              `json:"extra,optional"`      // 额外信息
+		SubList    []SuperTrainSubInfo `json:"list"`                // 题目列表
+		CreatedAt  int64               `json:"createdAt"`           // 创建时间
+		UpdatedAt  int64               `json:"updatedAt"`           // 更新时间
+	}
+	SuperTrainSubInfo {
+		ChapterId  int64  `json:"chapterId"`  // 章节ID
+		ChapterNo  string `json:"chapterNo"`  // 章节编号
+		Type       int64  `json:"type"`       // 试题类型 1.任务 2.文章
+		Name       string `json:"name"`       // 章节名称
+		Image      string `json:"image"`      // 章节封面图
+		Intro      string `json:"intro"`      // 章节介绍
+		Status     int64  `json:"status"`     // 状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+		IsCanLearn int64  `json:"isCanLearn"` // 是否可学
+		IsNew      int64  `json:"isNew"`      // 是否上新
+		Extra      string `json:"extra"`      // 额外信息
+		CreatedAt  int64  `json:"createdAt"`  // 创建时间
+		UpdatedAt  int64  `json:"updatedAt"`  // 更新时间
+	}
+)
+
+type (
+	// 课程列表
+	SuperTrainListReq {
+		CourseId int64  `form:"courseId,optional"`   // 课程ID
+		CourseNo string `form:"courseNo,optional"`   // 课程编号
+		Type     int64  `form:"courseType,optional"` // 课程类型 1.写作慢练 2.写作快练 3.超练阅读
+		Name     string `form:"name,optional"`       // 课程名称
+		Status   int64  `form:"status,optional"`     // 审核状态 1.初始录入 2.审核中 3.审核通过 4.审核未通过 5.下架
+
+		ChapterId   int64  `form:"chapterId,optional"`   // 章节ID
+		ChapterNo   string `form:"chapterNo,optional"`   // 章节编号
+		ChapterName string `form:"chapterName,optional"` // 章节名称
+
+		PageReq
+	}
+	SuperTrainListResp {
+		List       []SuperTrainInfo `json:"list"`
+		Pagination Pagination       `json:"pagination"`
+	}
+
+// // 例题详情
+//
+//	LessonExampleReq {
+//		ExampleId int64 `form:"exampleId"`
+//	}
+//
+//	LessonExampleResp {
+//		Content string `json:"content"` // 题目解析
+//	}
+//
+// // 课程详情
+//
+//	LessonDetailReq {
+//		UserId int64 `form:"userId"`
+//	}
+//
+// // 课程编辑
+//
+//	LessonEditReq {
+//		UserId   int64  `json:"userId"`
+//		Name     string `json:"name"`               // 姓名
+//		Grade    int64  `json:"grade,range=[1:13]"` // 年级
+//		Gender   int64  `json:"gender,options=1|2"` // 性别
+//		Province int64  `json:"province"`           // 省
+//		City     int64  `json:"city,default=0"`     // 市 默认0
+//	}
+//
+//	LessonEditResp {
+//		Result bool `json:"result"`
+//	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : lesson
+	prefix : /admin/lesson/superTrain
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "课程列表"
+	@handler SuperTrainList
+	get /list (SuperTrainListReq) returns (SuperTrainListResp)
+
+	//	@doc "课程详情"
+	//	@handler LessonDetail
+	//	get /detail (MemberDetailReq) returns (MemberInfo)
+
+	//	@doc "课程编辑"
+	//	@handler MemberEdit
+	//	post /edit (MemberEditReq) returns (MemberEditResp)
+}

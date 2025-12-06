@@ -1,0 +1,147 @@
+import "../common.api"
+
+info(
+	title: "订单管理"
+	desc: "订单管理"
+)
+
+// 订单查询部分
+type (
+	GetOrderListReq {
+		UserName    string `form:"userName,optional"`    // 用户名
+		OrderNo     string `form:"orderNo,optional"`     // 订单号
+		Phone       string `form:"phone,optional"`       // 手机号
+		SkuType     int64  `form:"skuType,optional"`     // 商品组合类型：1.虚拟 2.实物 3.混合
+		OrderStatus int64  `form:"orderStatus,optional"` // 订单状态：10. 待支付 20. 已支付 30. 已取消 40. 已全部退款 50. 已部分退款 60. 支付失败 70. 关闭订单
+		PayStatus   int64  `form:"payStatus,optional"`   // 支付状态：1. 待支付 2.支付中 3. 支付成功 4. 支付取消 5. 支付失败 6. 退款中 7.已退款 8.部分退款 9.支付关闭
+		PayChannel  int64  `form:"payChannel,optional"`  // 支付渠道 1.支付宝 2.微信 3.苹果 4.余额
+		GrantStatus int64  `form:"grantStatus,optional"` // 商品发放状态： 1. 待发放 2.已发放 3. 已回收
+		SubOrderNo  string `form:"subOrderNo,optional"`  // 子订单号
+		SkuName     string `form:"skuName,optional"`     // 商品名称
+		PageReq
+		TimeFilter
+		IsNeedLogistics int64 `form:"isNeedLogistics,optional"` // 是否需要物流 1 需要 2 不需要
+	}
+
+	OrderResearchInfo {
+		OrderNo         string `json:"orderNo"`         // 订单号
+		SubOrderNo      string `json:"subOrderNo"`      // 子订单号
+		UserName        string `json:"userName"`        // 用户名
+		Phone           string `json:"phone"`           // 手机号
+		SkuName         string `json:"skuName"`         // 商品名称
+		SkuType         int64  `json:"skuType"`         // 商品组合类型：1.虚拟 2.实物 3.混合
+		SkuId           int64  `json:"skuId"`           // sku id
+		SkuNum          int64  `json:"skuNum"`          // 商品数量
+		SkuPrice        int64  `json:"skuPrice"`        // 商品价格
+		SkuStone        int64  `json:"skuStone"`        // 商品悟性石
+		OrderStatus     int64  `json:"orderStatus"`     // 订单状态：10. 待支付 20. 已支付 30. 已取消 40. 已全部退款 50. 已部分退款 60. 支付失败 70. 关闭订单
+		PayStatus       int64  `json:"payStatus"`       // 支付状态：1. 待支付 2.支付中 3. 支付成功 4. 支付取消 5. 支付失败 6. 退款中 7.已退款 8.部分退款 9.支付关闭
+		GrantStatus     int64  `json:"grantStatus"`     // 商品发放状态： 1. 待发放 2.已发放 3. 已回收
+		IsNeedLogistics int64  `json:"isNeedLogistics"` // 是否需要物流 1 需要 2 不需要
+		CreatedAt       string `json:"createdAt"`       // 订单生成时间
+	}
+
+	GetOrderListResp {
+		List       []*OrderResearchInfo `json:"list"` // 订单列表
+		Pagination Pagination           `json:"pagination"`
+	}
+)
+
+type (
+	OrderWaitSendReq {
+		OrderNo     string `form:"orderNo,optional"`     // 订单号
+		SubOrderNo  string `form:"subOrderNo,optional"`  // 子订单号
+		GoodsName   string `form:"goodsName,optional"`   // 商品名称
+		UserName    string `form:"userName,optional"`    // 用户名
+		UserPhone   string `form:"userPhone,optional"`   // 手机号
+		GrantStatus int64  `form:"grantStatus,optional"` // 商品发放状态： 1. 待发放 2.已发放 3. 已回收
+		PageReq
+		TimeFilter
+		ExportAll int64 `form:"exportAll,optional"` // 是否导出 1.导出所有 2.导出本页
+	}
+
+	OrderWaitSend {
+		OrderNo     string `json:"orderNo"`     // 订单号
+		SubOrderNo  string `json:"subOrderNo"`  // 子订单号
+		GoodsName   string `json:"goodsName"`   // 商品名称
+		Pcs         int64  `json:"pcs"`         // 商品数量
+		UserName    string `json:"userName"`    // 用户名
+		UserPhone   string `json:"userPhone"`   // 手机号
+		Province    string `json:"province"`    // 省
+		City        string `json:"city"`        // 市
+		Area        string `json:"area"`        // 区
+		Address     string `json:"address"`     // 详细地址
+		GrantStatus int64  `json:"grantStatus"` // 商品发放状态： 1. 待发放 2.已发放 3. 已回收
+		CreatedAt   string `json:"createdAt"`   // 订单生成时间
+		PayChannel  int64  `json:"payChannel"`  // 支付渠道 1.微信 2.支付宝 3.苹果 4.余额
+	}
+
+	OrderWaitSendResp {
+		List       []*OrderWaitSend `json:"list"` // 订单列表
+		Pagination Pagination       `json:"pagination"`
+	}
+
+	ExportWaitSendResp {
+		Url string `json:"url"` // 导出文件地址
+	}
+)
+
+type (
+	GoodsListReq {
+		SkuId int64 `form:"skuId"` // SKU ID
+	}
+
+	GoodsInfo {
+		Id            int64  `json:"id"`            // 商品ID
+		Name          string `json:"name"`          // 商品名称
+		Stock         int64  `json:"stock"`         // 库存
+		Description   string `json:"description"`   // 商品描述
+		OriginalPrice int64  `json:"originalPrice"` // 原价
+		Price         int64  `json:"price"`         // 折扣价
+		Type          int64  `json:"type"`          // 商品类型 1:虚拟 2:实物
+		Pcs           int64  `json:"pcs"`           // 商品数量
+	}
+
+	GoodsListResp {
+		List []*GoodsInfo `json:"list"` // 商品列表
+	}
+)
+
+type (
+	OrderExpressReq {
+		SubOrderNo string `json:"subOrderNo"` // 子单号
+	}
+	OrderExpressResp struct{}
+)
+
+@server(
+	jwt: JwtAuth
+	group : order
+	prefix : /admin/order
+	middleware: PermMenuAuth
+)
+service application {
+	@doc "获取订单列表"
+	@handler GetOrderList
+	get /getOrderList (GetOrderListReq) returns (GetOrderListResp)
+
+	@doc "导出订单列表"
+	@handler ExportOrder
+	get /exportOrder (GetOrderListReq) returns (GetOrderListResp)
+
+	@doc "获取待发货列表"
+	@handler OrderWaitSend
+	get /orderWaitSend (OrderWaitSendReq) returns (OrderWaitSendResp)
+
+	@doc "导出待发货列表"
+	@handler ExportWaitSend
+	get /exportWaitSend (OrderWaitSendReq) returns (ExportWaitSendResp)
+
+	@doc "获取SKU下商品列表"
+	@handler GetGoodsList
+	get /getGoodsList (GoodsListReq) returns (GoodsListResp)
+
+	@doc "更新子单物流状态"
+	@handler OrderExpress
+	post /orderExpress (OrderExpressReq) returns (OrderExpressResp)
+}

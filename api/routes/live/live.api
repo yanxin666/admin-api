@@ -1,0 +1,67 @@
+import "../common.api"
+
+info(
+	title: "直播中心"
+	desc: "直播管理"
+)
+
+// 获取正在进行的直播列表
+type (
+	GetActiveLivesResp {
+		List []ActiveLiveInfo `json:"list"` // 直播列表
+	}
+	ActiveLiveInfo {
+		StreamId int64  `json:"streamId"` // 直播间ID
+		Name     string `json:"name"`     // 直播名称
+	}
+)
+
+// 直播间学生列表
+type (
+	GetLiveStudentsReq {
+		StreamId    int64  `form:"streamId"`             //直播间id
+		StudentName string `form:"studentName,optional"` // 学生名称，支持模糊搜索
+		PageReq
+	}
+	GetLiveStudentsResp {
+		List       []LiveStudentInfo `json:"list"` // 学生列表
+		Pagination Pagination        `json:"pagination"`
+	}
+	LiveStudentInfo {
+		UserId   int64  `json:"userId"`   // 用户ID，界面展示用
+		ImUserId string `json:"imUserId"` // IM用户ID，禁言时传参
+		UserName string `json:"userName"` // 用户名
+		IsMute   int64  `json:"isMute"`   // 禁言状态 1-禁言 2-未禁言
+		EndAt    int64  `json:"endAt"`    // 禁言结束时间戳，单位：秒，-1表示永久禁言
+		RoomId   string `json:"roomId"`   //直播间信令房间
+	}
+)
+
+// 个人禁言请求
+type (
+	MutePersonalReq {
+		RoomId   string `json:"roomId"`   // 直播房间号
+		IsMute   int64  `json:"isMute"`   // 是否禁言 1.禁言 2.取消禁言
+		ImUserId string `json:"imUserId"` // 学生用户ID
+		Duration int64  `json:"duration"` // 禁言时长，单位：秒 -1:表示永久禁言 >0:表示具体时长
+	}
+)
+
+@server(
+	jwt: JwtAuth
+	group : live
+	prefix : /admin/live
+)
+service application {
+	@doc "获取正在进行的直播列表"
+	@handler GetActiveLives
+	get /getActiveLives  returns (GetActiveLivesResp)
+
+	@doc "直播间学生列表"
+	@handler GetLiveStudents
+	get /getLiveStudents (GetLiveStudentsReq) returns (GetLiveStudentsResp)
+
+	@doc "个人禁言"
+	@handler MutePersonal
+	post /mutePersonal(MutePersonalReq)
+}
